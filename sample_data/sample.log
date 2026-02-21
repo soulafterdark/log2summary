@@ -1,0 +1,6 @@
+2026-02-21 14:03:10 | INFO | Server started
+2026-02-21 14:05:12 | INFO | User login successful
+2026-02-21 14:06:45 | WARNING | High memory usage detected
+2026-02-21 14:07:01 | INFO | Request processed
+2026-02-21 14:08:22 | WARNING | Slow response time
+2026-02-21 14:09:55 | ERROR | Database connection failed
