@@ -1,5 +1,5 @@
 import sys
-from .parser import parse_levels
+from .parser import parse_levels, count_levels
 
 
 def main():
@@ -15,13 +15,8 @@ def main():
 
         levels, skipped = parse_levels(lines)
 
-        counts = {}
+        counts = count_levels(levels)
 
-        for level in levels:
-            if level in counts:
-                counts[level] += 1
-            else:
-                counts[level] = 1
 
         print("Summary:")
         for level, count in counts.items():
