@@ -1,5 +1,5 @@
 # web/app.py
-from flask import Flask, request, render_template_string
+from flask import Flask, request, render_template, render_template_string
 
 from log2summary.parser import parse_levels, count_levels
 
@@ -52,7 +52,7 @@ RESULTS_HTML = """
 
 @app.get("/")
 def index():
-    return render_template_string(UPLOAD_FORM_HTML)
+    return render_template("upload.html")
 
 
 @app.post("/upload")
