@@ -1,0 +1,14 @@
+<!doctype html>
+<title>Log2Summary Results</title>
+
+<h1>Log Summary</h1>
+
+<ul>
+  <li>INFO: {{ counts.get("INFO", 0) }}</li>
+  <li>WARNING: {{ counts.get("WARNING", 0) }}</li>
+  <li>ERROR: {{ counts.get("ERROR", 0) }}</li>
+</ul>
+
+<p>Skipped lines: {{ skipped }}</p>
+
+<a href="/">Upload another file</a>

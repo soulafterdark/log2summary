@@ -1,5 +1,5 @@
 # web/app.py
-from flask import Flask, request, render_template, render_template_string
+from flask import Flask, request, render_template
 
 from log2summary.parser import parse_levels, count_levels
 
@@ -75,7 +75,7 @@ def upload():
     levels, skipped = parse_levels(lines)
     counts = count_levels(levels)
 
-    return render_template_string(RESULTS_HTML, counts=counts, skipped=skipped)
+    return render_template("results.html", counts=counts, skipped=skipped)
 
 
 
