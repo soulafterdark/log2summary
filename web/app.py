@@ -61,14 +61,22 @@ def upload():
     if not f:
         return "Missing file field 'logfile'", 400
 
-    # Read as text safely; replace undecodable bytes.
-    text = f.stream.read().decode("utf-8", errors="replace")
+    # Read as text safely
+    try:
+        text = f.stream.read().decode("utf-8")
+    except UnicodeDecodeError:
+        return "Uploaded file must be UTF-8 text.", 400
+
     lines = text.splitlines()
+
+    if not lines:
+        return "Uploaded file is empty.", 400
 
     levels, skipped = parse_levels(lines)
     counts = count_levels(levels)
 
     return render_template_string(RESULTS_HTML, counts=counts, skipped=skipped)
+
 
 
 if __name__ == "__main__":
