@@ -29,5 +29,21 @@ class TestParser(unittest.TestCase):
         self.assertEqual(counts["ERROR"], 1)
 
 
+    def test_parse_levels_all_malformed_lines(self):
+        lines = [
+            "Bad line\n",
+            "Another wrong format\n",
+            "Still not valid\n"
+        ]
+
+        levels, skipped = parse_levels(lines)
+        counts = count_levels(levels)
+
+        self.assertEqual(levels, [])
+        self.assertEqual(counts, {})
+        self.assertEqual(skipped, 3)
+
+
+
 if __name__ == "__main__":
     unittest.main()
