@@ -19,5 +19,15 @@ class TestParser(unittest.TestCase):
         self.assertEqual(skipped, 1)
 
 
+    def test_count_levels_handles_multiple_of_same_level(self):
+        levels = ["INFO", "INFO", "WARNING", "ERROR", "INFO"]
+
+        counts = count_levels(levels)
+
+        self.assertEqual(counts["INFO"], 3)
+        self.assertEqual(counts["WARNING"], 1)
+        self.assertEqual(counts["ERROR"], 1)
+
+
 if __name__ == "__main__":
     unittest.main()
