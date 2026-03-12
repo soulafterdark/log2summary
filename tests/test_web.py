@@ -22,6 +22,23 @@ class TestWebApp(unittest.TestCase):
         self.assertEqual(response.status_code, 400)
         self.assertIn(b"Uploaded file is empty.", response.data)
 
+    def test_upload_valid_file_returns_summary(self):
+        log_content = b"""2026-02-21 | INFO | Start
+2026-02-21 | WARNING | Memory high
+2026-02-21 | ERROR | Database failed
+"""
+
+        response = self.client.post(
+            "/upload",
+            data={"logfile": (io.BytesIO(log_content), "test.log")},
+            content_type="multipart/form-data",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"INFO", response.data)
+        self.assertIn(b"WARNING", response.data)
+        self.assertIn(b"ERROR", response.data)
+
 
 if __name__ == "__main__":
     unittest.main()
