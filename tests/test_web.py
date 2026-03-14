@@ -40,5 +40,16 @@ class TestWebApp(unittest.TestCase):
         self.assertIn(b"ERROR", response.data)
 
 
+    def test_upload_non_utf8_file_returns_400(self):
+        response = self.client.post(
+            "/upload",
+            data={"logfile": (io.BytesIO(b"\xff\xfe\xfd"), "bad.log")},
+            content_type="multipart/form-data",
+        )
+        self.assertEqual(response.status_code, 400)
+        self.assertIn(b"Uploaded file must be UTF-8 text.", response.data)
+
+
+
 if __name__ == "__main__":
-    unittest.main()
+    unittest.main()   
