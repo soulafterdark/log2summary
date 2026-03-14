@@ -44,6 +44,21 @@ class TestParser(unittest.TestCase):
         self.assertEqual(skipped, 3)
 
 
+    def test_parse_levels_skips_unknown_levels(self):
+        lines = [
+            "2024-01-01 | INFO | System started\n",
+            "2024-01-01 | DEBUG | Extra detail\n",
+            "2024-01-01 | ERROR | Something broke\n",
+        ]
+
+        levels, skipped = parse_levels(lines)
+        counts = count_levels(levels)
+
+        self.assertEqual(counts["INFO"], 1)
+        self.assertEqual(counts["ERROR"], 1)
+        self.assertNotIn("DEBUG", counts)
+        self.assertEqual(skipped, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

@@ -1,4 +1,5 @@
 def parse_levels(lines):
+    valid_levels = {"INFO", "WARNING", "ERROR"}
     levels = []
     skipped = 0
 
@@ -6,7 +7,10 @@ def parse_levels(lines):
         parts = line.strip().split("|")
         if len(parts) >= 2:
             level = parts[1].strip()
-            levels.append(level)
+            if level in valid_levels:
+                levels.append(level)
+            else:
+                skipped += 1
         else:
             skipped += 1
 
