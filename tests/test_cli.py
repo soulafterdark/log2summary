@@ -35,5 +35,18 @@ class TestCLI(unittest.TestCase):
             os.remove(temp_path)
 
 
+    def test_main_exits_for_missing_file(self):
+        with patch("sys.argv", ["python -m log2summary", "does_not_exist.log"]):
+            output = io.StringIO()
+            with redirect_stdout(output):
+                with self.assertRaises(SystemExit) as cm:
+                    main()
+
+        self.assertEqual(cm.exception.code, 1)
+        self.assertIn("Error: File not found.", output.getvalue())
+
+
+
+
 if __name__ == "__main__":
     unittest.main()
