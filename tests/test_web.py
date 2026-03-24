@@ -51,5 +51,25 @@ class TestWebApp(unittest.TestCase):
 
 
 
+    def test_upload_shows_skipped_line_count(self):
+        log_content = b"""2026-02-21 | INFO | Start
+bad line here
+2026-02-21 | ERROR | Database failed
+"""
+
+        response = self.client.post(
+            "/upload",
+            data={"logfile": (io.BytesIO(log_content), "mixed.log")},
+            content_type="multipart/form-data",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertIn(b"Skipped lines: 1", response.data)
+
+
+
 if __name__ == "__main__":
     unittest.main()   
+
+
+
