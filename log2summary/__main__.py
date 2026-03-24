@@ -1,6 +1,6 @@
 import argparse
 import sys
-from .parser import parse_levels, count_levels
+from .service import summarize_lines
 
 
 def main():
@@ -20,8 +20,8 @@ def main():
         with open(log_file, "r") as f:
             lines = f.readlines()
 
-        levels, skipped = parse_levels(lines)
-        counts = count_levels(levels)
+        counts, skipped = summarize_lines(lines)
+
 
         print("Summary:")
         for level, count in counts.items():

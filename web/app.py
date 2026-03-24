@@ -1,6 +1,6 @@
 from flask import Flask, request, render_template
 
-from log2summary.parser import parse_levels, count_levels
+from log2summary.service import summarize_lines
 
 app = Flask(__name__)
 
@@ -26,8 +26,8 @@ def upload():
     if not lines:
         return "Uploaded file is empty.", 400
 
-    levels, skipped = parse_levels(lines)
-    counts = count_levels(levels)
+    counts, skipped = summarize_lines(lines)
+
 
     return render_template("results.html", counts=counts, skipped=skipped)
 
