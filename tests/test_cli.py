@@ -47,6 +47,33 @@ class TestCLI(unittest.TestCase):
 
 
 
+    def test_cli_output_order(self):
+        log_content = """2026-02-21 | ERROR | Crash
+2026-02-21 | INFO | Start
+2026-02-21 | WARNING | Memory high
+"""
+
+        with tempfile.NamedTemporaryFile("w", delete=False) as f:
+            f.write(log_content)
+            temp_path = f.name
+
+        try:
+            with patch("sys.argv", ["python -m log2summary", temp_path]):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    main()
+
+            text = output.getvalue()
+
+            info_index = text.find("INFO:")
+            warning_index = text.find("WARNING:")
+            error_index = text.find("ERROR:")
+
+            self.assertTrue(info_index < warning_index < error_index)
+        finally:
+            os.remove(temp_path)
+
+
 
 if __name__ == "__main__":
     unittest.main()

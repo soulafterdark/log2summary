@@ -24,8 +24,8 @@ def main():
 
 
         print("Summary:")
-        for level, count in counts.items():
-            print(f"{level}: {count}")
+        for level in ["INFO", "WARNING", "ERROR"]:
+            print(f"{level}: {counts.get(level, 0)}")
 
         print(f"Skipped malformed lines: {skipped}")
 
