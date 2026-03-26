@@ -67,6 +67,22 @@ bad line here
         self.assertIn(b"Skipped lines: 1", response.data)
 
 
+    def test_upload_rejects_large_file(self):
+        large_content = "2026-02-21 | INFO | Start\n" * 100000
+
+        data = {
+            "logfile": (io.BytesIO(large_content.encode("utf-8")), "large.log")
+        }
+
+        response = self.client.post(
+            "/upload",
+            data=data,
+            content_type="multipart/form-data",
+        )
+
+        self.assertEqual(response.status_code, 413)
+
+
 
 if __name__ == "__main__":
     unittest.main()   
