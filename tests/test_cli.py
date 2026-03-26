@@ -74,6 +74,29 @@ class TestCLI(unittest.TestCase):
             os.remove(temp_path)
 
 
+    def test_cli_json_output(self):
+        log_content = """2026-02-21 | INFO | Start
+2026-02-21 | ERROR | Crash
+"""
+
+        with tempfile.NamedTemporaryFile("w", delete=False) as f:
+            f.write(log_content)
+            temp_path = f.name
+
+        try:
+            with patch("sys.argv", ["python -m log2summary", temp_path, "--json"]):
+                output = io.StringIO()
+                with redirect_stdout(output):
+                    main()
+
+            text = output.getvalue()
+            self.assertIn('"INFO": 1', text)
+            self.assertIn('"ERROR": 1', text)
+            self.assertIn('"skipped": 0', text)
+        finally:
+            os.remove(temp_path)
+
+
 
 if __name__ == "__main__":
     unittest.main()

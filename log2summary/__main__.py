@@ -1,5 +1,6 @@
 import argparse
 import sys
+import json
 from .service import summarize_lines
 
 
@@ -12,6 +13,12 @@ def main():
         "log_file",
         help="Path to the log file to summarize"
     )
+    parser.add_argument(
+        "--json",
+        action="store_true",
+        dest="json_output",
+        help="Print summary as JSON"
+    )
 
     args = parser.parse_args()
     log_file = args.log_file
@@ -22,12 +29,20 @@ def main():
 
         counts, skipped = summarize_lines(lines)
 
+        if args.json_output:
+            payload = {
+                "INFO": counts.get("INFO", 0),
+                "WARNING": counts.get("WARNING", 0),
+                "ERROR": counts.get("ERROR", 0),
+                "skipped": skipped,
+            }
+            print(json.dumps(payload))
+        else:
+            print("Summary:")
+            for level in ["INFO", "WARNING", "ERROR"]:
+                print(f"{level}: {counts.get(level, 0)}")
 
-        print("Summary:")
-        for level in ["INFO", "WARNING", "ERROR"]:
-            print(f"{level}: {counts.get(level, 0)}")
-
-        print(f"Skipped malformed lines: {skipped}")
+            print(f"Skipped malformed lines: {skipped}")
 
     except FileNotFoundError:
         print("Error: File not found.")
