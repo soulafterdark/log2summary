@@ -1,5 +1,6 @@
 import io
 import unittest
+import warnings
 
 from web.app import app
 
@@ -82,6 +83,23 @@ bad line here
 
         self.assertEqual(response.status_code, 413)
 
+
+    def test_upload_does_not_emit_resource_warning(self):
+        log_content = b"2026-02-21 | INFO | Start\n"
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            response = self.client.post(
+                "/upload",
+                data={"logfile": (io.BytesIO(log_content), "test.log")},
+                content_type="multipart/form-data",
+            )
+
+        self.assertEqual(response.status_code, 200)
+        resource_warnings = [
+            warning for warning in caught if issubclass(warning.category, ResourceWarning)
+        ]
+        self.assertEqual(resource_warnings, [])
 
 
 if __name__ == "__main__":
