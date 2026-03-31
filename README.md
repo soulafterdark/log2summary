@@ -1,16 +1,51 @@
 # Log2Summary
 
-Log2Summary is a small backend-focused project built during a structured engineering training camp.
+Log2Summary is a small backend-focused project built as part of a structured backend 
+engineering training workflow.
 
-It reads a log file, extracts structured log levels (INFO, WARNING, ERROR), counts occurrences, safely 
-skips malformed lines, and prints a summary.
+The application reads a log file, extracts structured log levels (INFO, WARNING, ERROR), 
+counts occurrences, safely skips malformed lines, and produces a summary via CLI or Web 
+interface.
 
-The project is intentionally minimal and disciplined:
-- No feature creep
-- Clear separation of concerns
-- Reusable core logic
-- Multiple interfaces over the same backend
+This project emphasizes backend engineering practices rather than feature complexity.
 
+
+---
+
+## Features
+
+- Log parsing for INFO / WARNING / ERROR
+- Skips malformed log lines safely
+- CLI interface
+- Web upload interface (Flask)
+- UTF-8 file validation
+- Empty file handling
+- Upload size limit
+- Logging for web requests
+- Service layer separating business logic
+- Full automated test suite
+- Clean Git workflow
+- Package versioning
+
+
+---
+
+## Architecture
+
+The project follows a layered backend architecture:
+
+Interfaces
+    CLI (__main__.py)
+    Web (web/app.py)
+        ↓
+Service Layer
+    service.py (summarize_lines)
+        ↓
+Core Logic
+    parser.py (parse_levels, count_levels)
+
+Both CLI and Web interfaces call the same service layer, which calls the parser.
+This keeps the system modular, testable, and reusable.
 
 
 ---
@@ -18,15 +53,27 @@ The project is intentionally minimal and disciplined:
 ## Project Structure
 
 log2summary/
-  parser.py        # Core parsing + counting logic (the "brain")
-  __main__.py      # CLI interface
-
-web/
-  app.py           # Thin Flask UI layer (imports backend logic)
-
-sample_data/
-tests/
-
+│
+├── README.md
+├── pyproject.toml
+├── setup.py
+│
+├── log2summary/
+│   ├── __init__.py
+│   ├── __main__.py
+│   ├── parser.py
+│   ├── service.py
+│   └── version.py
+│
+├── web/
+│   ├── app.py
+│   └── templates/
+│
+├── tests/
+│
+├── sample_data/
+│
+└── .venv/
 
 
 ---
@@ -35,43 +82,70 @@ tests/
 
 Run via module:
 
-python3 -m log2summary <log_file>
+python -m log2summary sample_data/sample.log
 
-Example:
+Example output:
 
-python3 -m log2summary sample_data/sample.log
+ERROR: 1
+INFO: 1
+WARNING: 1
+Skipped malformed lines: 0
 
-If installed inside the virtual environment:
+JSON output option:
 
-log2summary sample_data/sample.log
-
+python -m log2summary sample_data/sample.log --json
 
 
 ---
 
-## Web UI (Thin Flask Layer)
+## Web Interface
 
-This is a minimal single-page upload interface that reuses the existing backend logic.
-
-From the project root:
+Start the web app:
 
 source .venv/bin/activate
 python web/app.py
 
-Then open:
+Open in browser:
 
 http://127.0.0.1:5000
 
-Upload a log file (e.g. sample_data/sample.log) to see counts + skipped lines.
-
+Upload a log file to see summary results.
 
 
 ---
 
-## Design Principle
+## Running Tests
 
-Core logic lives in `parser.py`.
+python -m unittest
 
-Interfaces (CLI, Web) are thin wrappers that call the same backend functions.
+The test suite covers:
+- Parser
+- Service layer
+- CLI
+- Web upload
+- File validation
+- Upload limits
 
-This keeps the system modular, testable, and reusable.
+
+---
+
+## Version
+
+Current version: 0.1.0
+
+
+---
+
+## Purpose of This Project
+
+This project is not meant to be a complex application.
+
+It is meant to demonstrate backend engineering practices:
+- Separation of concerns
+- Testing before changes
+- Refactoring safely
+- Logging
+- Versioning
+- Packaging
+- Clean Git workflow
+- Release engineering discipline
