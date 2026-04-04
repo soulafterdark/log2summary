@@ -1,5 +1,5 @@
 import logging
-from flask import Flask, request, render_template
+from flask import Flask, jsonify, request, render_template
 
 from log2summary.service import summarize_lines
 
@@ -18,6 +18,12 @@ def too_large(e):
 def index():
     logger.info("Index page requested")
     return render_template("upload.html")
+
+
+@app.get("/health")
+def health():
+    logger.info("Health check requested")
+    return jsonify({"status": "ok"}), 200
 
 
 @app.post("/upload")

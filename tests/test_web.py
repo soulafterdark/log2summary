@@ -9,6 +9,11 @@ class TestWebApp(unittest.TestCase):
     def setUp(self):
         self.client = app.test_client()
 
+    def test_health_returns_ok(self):
+        response = self.client.get("/health")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.get_json(), {"status": "ok"})
+
     def test_upload_missing_file_returns_400(self):
         response = self.client.post("/upload", data={})
         self.assertEqual(response.status_code, 400)
@@ -40,7 +45,6 @@ class TestWebApp(unittest.TestCase):
         self.assertIn(b"WARNING", response.data)
         self.assertIn(b"ERROR", response.data)
 
-
     def test_upload_non_utf8_file_returns_400(self):
         response = self.client.post(
             "/upload",
@@ -49,8 +53,6 @@ class TestWebApp(unittest.TestCase):
         )
         self.assertEqual(response.status_code, 400)
         self.assertIn(b"Uploaded file must be UTF-8 text.", response.data)
-
-
 
     def test_upload_shows_skipped_line_count(self):
         log_content = b"""2026-02-21 | INFO | Start
@@ -67,7 +69,6 @@ bad line here
         self.assertEqual(response.status_code, 200)
         self.assertIn(b"Skipped lines: 1", response.data)
 
-
     def test_upload_rejects_large_file(self):
         large_content = "2026-02-21 | INFO | Start\n" * 100000
 
@@ -83,7 +84,6 @@ bad line here
 
         self.assertEqual(response.status_code, 413)
 
-
     def test_upload_does_not_emit_resource_warning(self):
         log_content = b"2026-02-21 | INFO | Start\n"
 
@@ -97,13 +97,11 @@ bad line here
 
         self.assertEqual(response.status_code, 200)
         resource_warnings = [
-            warning for warning in caught if issubclass(warning.category, ResourceWarning)
+            warning
+            for warning in caught
+            if issubclass(warning.category, ResourceWarning)
         ]
         self.assertEqual(resource_warnings, [])
 
-
 if __name__ == "__main__":
-    unittest.main()   
-
-
-
+    unittest.main()
