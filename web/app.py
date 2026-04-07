@@ -8,6 +8,25 @@ logger = logging.getLogger(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 1 * 1024 * 1024  # 1 MB upload limit
 
 
+def configure_logging():
+    handler = logging.StreamHandler()
+    handler.setFormatter(
+        logging.Formatter(
+            "level=%(levelname)s logger=%(name)s message=%(message)s"
+        )
+    )
+
+    logger.setLevel(logging.INFO)
+
+    if not logger.handlers:
+        logger.addHandler(handler)
+
+    logger.propagate = False
+
+
+configure_logging()
+
+
 @app.errorhandler(413)
 def too_large(e):
     logger.warning("Upload rejected: file too large")

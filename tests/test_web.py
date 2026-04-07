@@ -1,4 +1,5 @@
 import io
+import logging
 import unittest
 import warnings
 
@@ -13,6 +14,15 @@ class TestWebApp(unittest.TestCase):
         response = self.client.get("/health")
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), {"status": "ok"})
+
+    def test_health_emits_log_message(self):
+        with self.assertLogs("web.app", level="INFO") as captured:
+            response = self.client.get("/health")
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(
+            any("Health check requested" in message for message in captured.output)
+        )
 
     def test_api_summary_returns_json_counts_and_skipped(self):
         log_content = b"""2026-02-21 | INFO | Start
