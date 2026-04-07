@@ -26,6 +26,38 @@ def health():
     return jsonify({"status": "ok"}), 200
 
 
+@app.post("/api/summary")
+def api_summary():
+    f = request.files.get("logfile")
+    if not f:
+        logger.warning("API summary failed: missing file field")
+        return jsonify({"error": "Missing file field 'logfile'"}), 400
+
+    try:
+        text = f.stream.read().decode("utf-8")
+    except UnicodeDecodeError:
+        logger.warning("API summary failed: non UTF-8 file")
+        return jsonify({"error": "Uploaded file must be UTF-8 text."}), 400
+
+    lines = text.splitlines()
+
+    if not lines:
+        logger.warning("API summary failed: empty file")
+        return jsonify({"error": "Uploaded file is empty."}), 400
+
+    counts, skipped = summarize_lines(lines)
+
+    logger.info(
+        "API summary processed successfully: INFO=%s WARNING=%s ERROR=%s skipped=%s",
+        counts.get("INFO", 0),
+        counts.get("WARNING", 0),
+        counts.get("ERROR", 0),
+        skipped,
+    )
+
+    return jsonify({"counts": counts, "skipped": skipped}), 200
+
+
 @app.post("/upload")
 def upload():
     f = request.files.get("logfile")

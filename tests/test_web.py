@@ -14,6 +14,28 @@ class TestWebApp(unittest.TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.get_json(), {"status": "ok"})
 
+    def test_api_summary_returns_json_counts_and_skipped(self):
+        log_content = b"""2026-02-21 | INFO | Start
+2026-02-21 | WARNING | Memory high
+bad line here
+2026-02-21 | ERROR | Database failed
+"""
+
+        response = self.client.post(
+            "/api/summary",
+            data={"logfile": (io.BytesIO(log_content), "test.log")},
+            content_type="multipart/form-data",
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(
+            response.get_json(),
+            {
+                "counts": {"INFO": 1, "WARNING": 1, "ERROR": 1},
+                "skipped": 1,
+            },
+        )
+
     def test_upload_missing_file_returns_400(self):
         response = self.client.post("/upload", data={})
         self.assertEqual(response.status_code, 400)
@@ -102,6 +124,7 @@ bad line here
             if issubclass(warning.category, ResourceWarning)
         ]
         self.assertEqual(resource_warnings, [])
+
 
 if __name__ == "__main__":
     unittest.main()
