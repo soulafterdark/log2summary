@@ -1,15 +1,13 @@
 import logging
-import os
 from flask import Flask, jsonify, request, render_template
 
 from log2summary.service import summarize_lines
+from web.config import get_max_content_length
 
 app = Flask(__name__)
 logger = logging.getLogger(__name__)
 
-max_upload_mb = int(os.getenv("LOG2SUMMARY_MAX_UPLOAD_MB", "1"))
-app.config["MAX_CONTENT_LENGTH"] = max_upload_mb * 1024 * 1024
-
+app.config["MAX_CONTENT_LENGTH"] = get_max_content_length()
 
 def configure_logging():
     handler = logging.StreamHandler()
