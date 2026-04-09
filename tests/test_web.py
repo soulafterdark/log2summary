@@ -1,14 +1,16 @@
+import importlib
 import io
-import logging
+import os
 import unittest
 import warnings
+from unittest import mock
 
-from web.app import app
+import web.app as web_app_module
 
 
 class TestWebApp(unittest.TestCase):
     def setUp(self):
-        self.client = app.test_client()
+        self.client = web_app_module.app.test_client()
 
     def test_health_returns_ok(self):
         response = self.client.get("/health")
@@ -115,6 +117,22 @@ bad line here
         )
 
         self.assertEqual(response.status_code, 413)
+
+    def test_upload_limit_uses_environment_variable(self):
+        original_limit = web_app_module.app.config["MAX_CONTENT_LENGTH"]
+
+        with mock.patch.dict(os.environ, {"LOG2SUMMARY_MAX_UPLOAD_MB": "5"}, clear=False):
+            reloaded_module = importlib.reload(web_app_module)
+            self.assertEqual(
+                reloaded_module.app.config["MAX_CONTENT_LENGTH"],
+                5 * 1024 * 1024,
+            )
+
+        restored_module = importlib.reload(web_app_module)
+        self.assertEqual(
+            restored_module.app.config["MAX_CONTENT_LENGTH"],
+            original_limit,
+        )
 
     def test_upload_does_not_emit_resource_warning(self):
         log_content = b"2026-02-21 | INFO | Start\n"
